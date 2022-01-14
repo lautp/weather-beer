@@ -2,16 +2,19 @@ import React, {useEffect, useContext} from 'react';
 import WeatherContext from '../context/weatherContext';
 import Weather from './Weather';
 import OrderList from './OrderList';
+import AuthContext from '../context/authContext';
 
 
 const Main = () => {
-    
+    const authContext = useContext(AuthContext);
+
     const weatherContext = useContext(WeatherContext);
 
     const {getWeather} = weatherContext;
 
     
     useEffect(()=>{
+        authContext.loadUser();
         // getWeather();
         //eslint-disable-next-line
     },[]) 

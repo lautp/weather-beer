@@ -4,16 +4,12 @@ import { Modal, Button } from 'react-bootstrap';
 
 
 const Weather = () => {
+    
     const weekday = ["Sunday", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday", "Sunday", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
     const weatherContext = useContext(WeatherContext);
 
-    const {weather, day, tmpt, getDay, getTemp, getDubbel, getNeipa, getGolden, getScotch} = weatherContext;
-
-    let bselected = null;
-    let qselected = null;
-    let opt1 = null;
-    let opt2 = null;
+    const {weather, day, tmpt, beer, birra, cant, quantity, getDay, getTemp, getBeer, getQuantity, makeOrder, getBirra, getCant} = weatherContext;
 
     const date = new Date();
 
@@ -29,43 +25,34 @@ const Weather = () => {
             };
             
             const handleBeerSelect = e => {
-                bselected = e.target.value;
-                opt1 = e.target;
+                getBeer(e.target.value)
+                getBirra(e.target)
+               
             }
             
             const handleQuantSelect = e => {
-                qselected = e.target.value;
-                opt2 = e.target;
+                getQuantity(e.target.value)
+                getCant(e.target);
+                
             }
 
             const addOrder = () => {
-                if(bselected !== null  && qselected !== null){
-                    if(bselected !== 'Pick beer' && qselected !== 'Pick quantity'){
-                        if(bselected ==='Dubbel'){
-                            getDubbel(qselected)
-                        }else if(bselected ==='NeIPA'){
-                            getNeipa(qselected)
-                        }else if(bselected ==='Golden'){
-                            getGolden(qselected)
-                        }else if(bselected ==='Scotch'){
-                            getScotch(qselected)
-                        }
-                    }
+                
+                if(beer !== 'Pick beer'  && quantity !== 'Pick quantity'){
+                    makeOrder(beer, quantity, day)
                 }
-                opt1.selectedIndex = 0;
-                opt2.selectedIndex = 0;
-
+                
                 setConf(true);
+
+                birra.selectedIndex = '0';
+                cant.selectedIndex = '0';
 
                 setTimeout(()=>{
                     setConf(false);
-                }, 1000)
-
-
-
+                    
+                }, 1500)
             }
 
-    
     return (
         <>
             <div className='container mt-5'>
@@ -77,7 +64,7 @@ const Weather = () => {
                             return (
                                 <div key={idx} className="row" >
                                     <div className="col-6 col-sm-4 col-md-4 h6">{weekday[date.getDay()+idx]}</div>
-                                    <div className="col-1 col-sm-2 h6 d-flex justify-content-end" id={idx}>{weather!==null?`${Math.round(weather.daily[idx].temp.day)} C°`:`22`}</div><div className='col-3 col-sm-2 h6'>C°</div>
+                                    <div className="col-1 col-sm-2 h6 d-flex justify-content-end" id={idx}>{weather!==null?`${Math.round(weather.daily[idx].temp.day)}`:`0`}</div><div className='col-3 col-sm-2 h6'>C°</div>
                                     <div className="col"><button className='btn btn-sm btn-outline-warning col-md-12 col-12 mb-3 mb-sm-3 mb-md-3' onClick={handleShow}>Order</button></div>
                                 </div>
                             )
@@ -96,15 +83,16 @@ const Weather = () => {
                 backdrop="static"
                 keyboard={false}
                 centered
+                
             >
                 <Modal.Header closeButton>
                     <Modal.Title>{day} order</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>The temp is/will be {tmpt} C°</p>
+                    <p>The temp is/will be {tmpt}</p>
                     <p>We recommend ordering {tmpt>32&&'Golden and NeIPA'}{tmpt>25&&tmpt<32&&'Scotch and NeIPA'}{tmpt<25&&'Dubbel, Scotch and NeIPA'}</p>
                     <p className='h3'>Beer</p>
-                    <select className="form-select" onChange={handleBeerSelect} >
+                    <select  className="form-select" onChange={handleBeerSelect} >
                         <option defaultValue="0">Pick beer</option>
                         <option value="Dubbel">Dubbel</option>
                         <option value="NeIPA">NeIPA</option>
@@ -112,7 +100,7 @@ const Weather = () => {
                         <option value="Scotch">Scotch</option>
                     </select>
                     <p className='h3 mt-3'>Tank quantity</p>
-                    <select className="form-select" onChange={handleQuantSelect}>
+                    <select  className="form-select" onChange={handleQuantSelect}>
                         <option defaultValue="0">Pick quantity</option>
                         <option value="1">1</option>
                         <option value="2">2</option>

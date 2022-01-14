@@ -1,14 +1,14 @@
 import {
     GET_WEATHER,
     GET_DAY,
-    GET_ID,
     GET_TEMP,
     GET_BEER,
     GET_QUANTITY,
-    GET_DUBBEL,
-    GET_NEIPA,
-    GET_GOLDEN,
-    GET_SCOTCH
+    ORDER_BEER,
+    ORDER_ERROR,
+    ORDER_DELETE,
+    GET_BIRRA,
+    GET_CANT
 
 } from '../types'
 
@@ -23,11 +23,6 @@ export default (state,action) => {
             return {
                 ...state,
                 day:action.payload
-            }
-        case GET_ID:
-            return {
-                ...state,
-                id:action.payload
             }
         case GET_TEMP:
             return {
@@ -44,27 +39,31 @@ export default (state,action) => {
                 ...state,
                 quantity:action.payload
             }
-        case GET_DUBBEL:
+        case ORDER_BEER:
             return {
                 ...state,
-                dubbel:action.payload
+                beer: action.payload
             }
-        case GET_NEIPA:
+        case ORDER_ERROR:
             return {
                 ...state,
-                neipa:action.payload
+                payload:action.payload
             }
-        case GET_GOLDEN:
+        case ORDER_DELETE:
             return {
                 ...state,
-                golden:action.payload
+                
             }
-        case GET_SCOTCH:
+        case GET_BIRRA:
             return {
                 ...state,
-                scotch:action.payload
+                birra: action.payload
             }
-        
+        case GET_CANT:
+            return {
+                ...state,
+                cant: action.payload
+            }
         default:
             return state;
     }

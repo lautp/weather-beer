@@ -1,5 +1,10 @@
+.logo {
+	color: white;
+	text-decoration: none;
+	pointer-events: none;
+}
+
 a {
 	text-decoration: none;
-	color: rgb(255, 255, 255);
-	pointer-events: none;
+	color: white;
 }

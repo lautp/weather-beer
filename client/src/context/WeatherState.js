@@ -1,5 +1,5 @@
 import React, {useReducer} from 'react';
-import { GET_WEATHER, GET_DAY, GET_ID, GET_TEMP, GET_DUBBEL, GET_NEIPA, GET_GOLDEN, GET_SCOTCH } from '../types';
+import { GET_WEATHER, GET_DAY, GET_TEMP, ORDER_BEER, ORDER_ERROR,  GET_BEER, GET_QUANTITY, GET_BIRRA, GET_CANT } from '../types';
 import WeatherContext from './weatherContext';
 import weatherReducer from './weatherReducer';
 import axios from 'axios';
@@ -11,12 +11,11 @@ const WeatherState = props => {
         day:'',
         id:'',
         tmpt:'',
-        golden:'',
-        scotch:'',
-        neipa:'',
-        dubbel:'',
-        beer:'',
-        quantity:''
+        beer:'Pick beer',
+        quantity:'Pick quantity',
+        birra:null,
+        cant:null,
+        error:null
     }
     
     const [state, dispatch] = useReducer(weatherReducer, initialState)
@@ -36,25 +35,47 @@ const WeatherState = props => {
     const getTemp = temp => {
         dispatch({type:GET_TEMP, payload:temp})
     }
-    
-    //Get Dubbel
-    const getDubbel = q => {
-        dispatch({type:GET_DUBBEL, payload:q})
+
+    //Get Beer
+    const getBeer = beer => {
+        dispatch({type:GET_BEER, payload:beer})
+    }
+    //Get Quantity
+    const getQuantity = quant => {
+        dispatch({type:GET_QUANTITY, payload:quant})
     }
 
-    //Get NeIPA
-    const getNeipa = q => {
-        dispatch({type:GET_NEIPA, payload:q})    
+    //Make Order
+    const makeOrder = async (beer, quantity, day) => {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        try {
+            const res = await axios.post('/api/order', {
+                beer,
+                quantity,
+                day
+            }, config)
+
+            dispatch({ type:ORDER_BEER, payload:res.data })
+            dispatch({type:GET_BEER, payload:'Pick beer'})
+            dispatch({type:GET_QUANTITY, payload:'Pick quantity'})
+        } catch (err) {
+            dispatch({type:ORDER_ERROR, payload:err.response.msg})
+        }
     }
 
-    //Get Golden
-    const getGolden = q => {
-        dispatch({type:GET_GOLDEN, payload:q})    
+    //Get Birra
+    const getBirra = birra => {
+        dispatch({type:GET_BIRRA, payload:birra})
     }
 
-    //Get Scotch
-    const getScotch = q => {
-        dispatch({type:GET_SCOTCH, payload:q})    
+    //Get Cant
+    const getCant = cant => {
+        dispatch({type:GET_CANT, payload:cant})
     }
     
     return (
@@ -63,19 +84,19 @@ const WeatherState = props => {
                 weather:state.weather,
                 day:state.day,
                 tmpt:state.tmpt,
-                golden:state.golden,
-                scotch:state.scotch,
-                neipa:state.neipa,
-                dubbel:state.dubbel,
                 beer:state.beer,
                 quantity:state.quantity,
+                birra:state.birra,
+                cant:state.cant,
                 getWeather,
                 getDay,
                 getTemp,
-                getDubbel,
-                getNeipa,
-                getGolden,
-                getScotch
+                getBeer,
+                getQuantity,
+                makeOrder,
+                getBirra,
+                getCant
+                
 
             }}
         >
@@ -85,3 +106,31 @@ const WeatherState = props => {
 }
 
 export default WeatherState;
+
+
+
+// //Get Dubbel
+// const getDubbel = q => {
+//     dispatch({type:GET_DUBBEL, payload:q})
+// }
+
+// //Get NeIPA
+// const getNeipa = q => {
+//     dispatch({type:GET_NEIPA, payload:q})    
+// }
+
+// //Get Golden
+// const getGolden = q => {
+//     dispatch({type:GET_GOLDEN, payload:q})    
+// }
+
+// //Get Scotch
+// const getScotch = q => {
+//     dispatch({type:GET_SCOTCH, payload:q})    
+// }
+
+
+// getDubbel,
+//                 getNeipa,
+//                 getGolden,
+//                 getScotch
