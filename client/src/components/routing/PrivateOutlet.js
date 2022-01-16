@@ -6,7 +6,8 @@ const PrivateOutlet = () => {
     
     const authContext = useContext(AuthContext);
 
-    const {isAuthenticated} = authContext
+    const {isAuthenticated, loadUser} = authContext
+    // loadUser();
     
     return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
     

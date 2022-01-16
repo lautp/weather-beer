@@ -14,7 +14,7 @@ const Weather = () => {
     const date = new Date();
 
     const [show, setShow] = useState(false);
-    const [conf, setConf] = useState(false)
+    const [conf, setConf] = useState(false);
           
             const handleClose = () => setShow(false);
             const handleShow = e => {

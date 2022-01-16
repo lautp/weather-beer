@@ -13,29 +13,18 @@ const Navbar = () => {
 
     const authLinks = (
         <>
-            
             <a href="#!" onClick={onLogout}>
-                <i className="fas fa-sign-out-alt "></i><span className="hide-sm"> Logout</span>
+                <i className="fas fa-sign-out-alt text-warning"></i><span className="text-warning"> Logout</span>
             </a>
-            
         </>
     )
 
     return (
         <>
             <nav className='navbar navbar-nav bg-warning pb-0'>
-                <div className="container">
-                    <div className="row col-12">
-                        <div className="col-4 offset-4 logo"><a href="#" className='navbar-brand'><h1 className='col-md-3 offset-md-3'>WeatherBeer</h1></a></div>
-                        <div className="col-1 offset-11">{isAuthenticated&&authLinks}</div>
-                    </div>
-                </div>
-                
-                
-                
-                
+                <a href="" className='navbar-brand h1 ms-4'><h1>Weather-Beer</h1></a>
             </nav>
-            
+            <div className="col-4 offset-1" >{isAuthenticated&&authLinks}</div>
         </>
     )
 }

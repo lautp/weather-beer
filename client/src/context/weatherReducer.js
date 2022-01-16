@@ -7,8 +7,15 @@ import {
     ORDER_BEER,
     ORDER_ERROR,
     ORDER_DELETE,
+    SET_ORDER,
+    ORDER_UPDATE,
+    FILTER_ORDER,
     GET_BIRRA,
-    GET_CANT
+    GET_CANT,
+    GET_ORDER,
+    SET_CURRENT,
+    CLEAR_CURRENT,
+    GET_ID
 
 } from '../types'
 
@@ -52,8 +59,9 @@ export default (state,action) => {
         case ORDER_DELETE:
             return {
                 ...state,
-                
+                orders: state.orders.filter(contact => contact.id !== action.payload)
             }
+        
         case GET_BIRRA:
             return {
                 ...state,
@@ -63,6 +71,26 @@ export default (state,action) => {
             return {
                 ...state,
                 cant: action.payload
+            }
+        case GET_ORDER:
+            return {
+                ...state,
+                orders: action.payload
+            }
+        case SET_CURRENT:
+            return {
+                ...state,
+                current: action.payload
+            }
+        case CLEAR_CURRENT:
+            return {
+                ...state,
+                current:{}
+            }
+        case GET_ID:
+            return {
+                ...state,
+                id:action.payload
             }
         default:
             return state;

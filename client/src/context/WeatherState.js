@@ -1,136 +1,216 @@
-import React, {useReducer} from 'react';
-import { GET_WEATHER, GET_DAY, GET_TEMP, ORDER_BEER, ORDER_ERROR,  GET_BEER, GET_QUANTITY, GET_BIRRA, GET_CANT } from '../types';
+import React, { useReducer, useContext } from 'react';
+import {
+	GET_WEATHER,
+	GET_DAY,
+	GET_TEMP,
+	ORDER_BEER,
+	ORDER_ERROR,
+	ORDER_DELETE,
+	GET_BEER,
+	GET_QUANTITY,
+	GET_BIRRA,
+	GET_CANT,
+	GET_ORDER,
+	SET_CURRENT,
+	CLEAR_CURRENT,
+	GET_ID,
+} from '../types';
 import WeatherContext from './weatherContext';
 import weatherReducer from './weatherReducer';
+import AuthContext from './authContext';
 import axios from 'axios';
 
 const WeatherState = props => {
-    
-    const initialState = {
-        weather:null,
-        day:'',
-        id:'',
-        tmpt:'',
-        beer:'Pick beer',
-        quantity:'Pick quantity',
-        birra:null,
-        cant:null,
-        error:null
-    }
-    
-    const [state, dispatch] = useReducer(weatherReducer, initialState)
-    
-    //Get Weather
-    const getWeather = async () => {
-        const res = await axios.get('https://api.openweathermap.org/data/2.5/onecall?lat=-34.603722&lon=-58.381592&units=metric&exclude=minutely,hourly&appid=09ec42e06160e90f15ac94e022c69554')
-        dispatch({type:GET_WEATHER, payload:res.data})
-    }
+	const initialState = {
+		weather: null,
+		day: '',
+		id: '',
+		tmpt: '',
+		beer: 'Pick beer',
+		quantity: 'Pick quantity',
+		birra: null,
+		cant: null,
+		error: null,
+		orders: [],
+		current: {},
+	};
 
-    //Get Day
-    const getDay = day => {
-        dispatch({type:GET_DAY, payload:day})
-    }
+	const authContext = useContext(AuthContext);
+	const { token } = authContext;
 
-    //Get Temp
-    const getTemp = temp => {
-        dispatch({type:GET_TEMP, payload:temp})
-    }
+	const [state, dispatch] = useReducer(weatherReducer, initialState);
 
-    //Get Beer
-    const getBeer = beer => {
-        dispatch({type:GET_BEER, payload:beer})
-    }
-    //Get Quantity
-    const getQuantity = quant => {
-        dispatch({type:GET_QUANTITY, payload:quant})
-    }
+	//Get Weather
+	const getWeather = async () => {
+		const res = await axios.get(
+			'https://api.openweathermap.org/data/2.5/onecall?lat=-34.603722&lon=-58.381592&units=metric&exclude=minutely,hourly&appid=09ec42e06160e90f15ac94e022c69554'
+		);
+		dispatch({ type: GET_WEATHER, payload: res.data });
+	};
 
-    //Make Order
-    const makeOrder = async (beer, quantity, day) => {
-        const config = {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
+	//Get Day
+	const getDay = day => {
+		dispatch({ type: GET_DAY, payload: day });
+	};
 
-        try {
-            const res = await axios.post('/api/order', {
-                beer,
-                quantity,
-                day
-            }, config)
+	//Get Temp
+	const getTemp = temp => {
+		dispatch({ type: GET_TEMP, payload: temp });
+	};
 
-            dispatch({ type:ORDER_BEER, payload:res.data })
-            dispatch({type:GET_BEER, payload:'Pick beer'})
-            dispatch({type:GET_QUANTITY, payload:'Pick quantity'})
-        } catch (err) {
-            dispatch({type:ORDER_ERROR, payload:err.response.msg})
-        }
-    }
+	//Get Beer
+	const getBeer = beer => {
+		dispatch({ type: GET_BEER, payload: beer });
+	};
+	//Get Quantity
+	const getQuantity = quant => {
+		dispatch({ type: GET_QUANTITY, payload: quant });
+	};
 
-    //Get Birra
-    const getBirra = birra => {
-        dispatch({type:GET_BIRRA, payload:birra})
-    }
+	//Make Order
+	const makeOrder = async (beer, quantity, day) => {
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		};
 
-    //Get Cant
-    const getCant = cant => {
-        dispatch({type:GET_CANT, payload:cant})
-    }
-    
-    return (
-        <WeatherContext.Provider
-            value={{
-                weather:state.weather,
-                day:state.day,
-                tmpt:state.tmpt,
-                beer:state.beer,
-                quantity:state.quantity,
-                birra:state.birra,
-                cant:state.cant,
-                getWeather,
-                getDay,
-                getTemp,
-                getBeer,
-                getQuantity,
-                makeOrder,
-                getBirra,
-                getCant
-                
+		try {
+			const res = await axios.post(
+				'/api/order',
+				{
+					beer,
+					quantity,
+					day,
+				},
+				config
+			);
 
-            }}
-        >
-            {props.children}
-        </WeatherContext.Provider>
-    )
-}
+			dispatch({ type: ORDER_BEER, payload: res.data });
+			dispatch({ type: GET_BEER, payload: 'Pick beer' });
+			dispatch({ type: GET_QUANTITY, payload: 'Pick quantity' });
+			getOrders();
+		} catch (err) {
+			dispatch({ type: ORDER_ERROR, payload: err.response.msg });
+		}
+	};
+
+	//Edit Order
+	const editOrder = async (beer, quantity, day, id) => {
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				'x-auth-token': `${token}`,
+			},
+		};
+
+		if (beer !== 'Pick beer' && quantity !== 'Pick quantity') {
+			try {
+				const res = await axios.put(
+					`/api/order/${id}`,
+					{
+						beer,
+						quantity,
+						day,
+					},
+					config
+				);
+
+				dispatch({ type: GET_BEER, payload: 'Pick beer' });
+				dispatch({ type: GET_QUANTITY, payload: 'Pick quantity' });
+				getOrders();
+			} catch (err) {
+				dispatch({ type: ORDER_ERROR, payload: err.response.msg });
+			}
+		}
+	};
+
+	//Delete Order
+	const deleteOrder = async id => {
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				'x-auth-token': `${token}`,
+			},
+		};
+
+		try {
+			const res = await axios.delete(`/api/order/${id}`, config);
+
+			dispatch({ type: GET_BEER, payload: 'Pick beer' });
+			dispatch({ type: GET_QUANTITY, payload: 'Pick quantity' });
+			getOrders();
+		} catch (err) {
+			dispatch({ type: ORDER_ERROR, payload: err.response.msg });
+		}
+	};
+
+	//Get orders
+	const getOrders = async () => {
+		const res = await axios.get('/api/order');
+		getOrder(res.data);
+	};
+
+	//Get Birra
+	const getBirra = birra => {
+		dispatch({ type: GET_BIRRA, payload: birra });
+	};
+
+	//Get Cant
+	const getCant = cant => {
+		dispatch({ type: GET_CANT, payload: cant });
+	};
+
+	//Get Order Array
+	const getOrder = order => {
+		dispatch({ type: GET_ORDER, payload: order });
+	};
+
+	//Set Current
+	const setCurrent = order => {
+		dispatch({ type: SET_CURRENT, payload: order });
+	};
+
+	//Clear Current
+	const clearCurrent = order => {
+		dispatch({ type: CLEAR_CURRENT });
+	};
+
+	//Get Id
+	const getId = id => {
+		dispatch({ type: GET_ID, payload: id });
+	};
+
+	return (
+		<WeatherContext.Provider
+			value={{
+				weather: state.weather,
+				day: state.day,
+				tmpt: state.tmpt,
+				beer: state.beer,
+				quantity: state.quantity,
+				birra: state.birra,
+				cant: state.cant,
+				orders: state.orders,
+				current: state.current,
+				getWeather,
+				getDay,
+				getTemp,
+				getBeer,
+				getQuantity,
+				makeOrder,
+				getBirra,
+				getCant,
+				getOrders,
+				deleteOrder,
+				setCurrent,
+				clearCurrent,
+				getId,
+				editOrder,
+			}}>
+			{props.children}
+		</WeatherContext.Provider>
+	);
+};
 
 export default WeatherState;
-
-
-
-// //Get Dubbel
-// const getDubbel = q => {
-//     dispatch({type:GET_DUBBEL, payload:q})
-// }
-
-// //Get NeIPA
-// const getNeipa = q => {
-//     dispatch({type:GET_NEIPA, payload:q})    
-// }
-
-// //Get Golden
-// const getGolden = q => {
-//     dispatch({type:GET_GOLDEN, payload:q})    
-// }
-
-// //Get Scotch
-// const getScotch = q => {
-//     dispatch({type:GET_SCOTCH, payload:q})    
-// }
-
-
-// getDubbel,
-//                 getNeipa,
-//                 getGolden,
-//                 getScotch

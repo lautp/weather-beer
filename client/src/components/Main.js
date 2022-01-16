@@ -12,10 +12,14 @@ const Main = () => {
 
     const {getWeather} = weatherContext;
 
+    const {loadUser} = authContext;
+
     
     useEffect(()=>{
-        authContext.loadUser();
         // getWeather();
+        loadUser();
+        console.log("logged")
+        
         //eslint-disable-next-line
     },[]) 
     

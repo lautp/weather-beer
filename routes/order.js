@@ -9,10 +9,13 @@ const Order = require('../model/Order');
 // @route   GET    api/order
 // @desc    Get all orders
 // @access  Private
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, (req, res) => {
     try {
-        const order = await Order.find({ user: req.user.id })//.sort({date:-1});
-        res.json(order);
+        setTimeout( async ()=>{
+            const order = await Order.find({ user: req.user.id })//.sort({date:-1});
+            res.json(order);
+        }, 2000)
+        
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error')
@@ -87,7 +90,7 @@ router.put('/:id', auth, async (req, res) => {
     }
 });
 
-// @route   DELETE    api/order/.id
+// @route   DELETE    api/order/:id
 // @desc    Delete order
 // @access  Private
 router.delete('/:id', auth, async(req, res) => {
