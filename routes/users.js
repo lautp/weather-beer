@@ -1,9 +1,9 @@
-const config = require("config");
-require("dotenv").config()
-const bcryptjs = require( 'bcryptjs' );
+const config = require('config');
+require('dotenv').config();
+const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
-const express =  require('express');
+const express = require('express');
 const router = express.Router();
 
 const User = require('../model/User');
@@ -11,70 +11,67 @@ const User = require('../model/User');
 // @route   POST    api/users
 // @desc    Register user
 // @access  Public
-router.post('/', [
-    body('name', 'enter a valid name')
-        .not().isEmpty(),
-    body('email', 'Please include a valid email').isEmail(),
-    body('password', 'Please enter a password with 6 o more characters').isLength({min:6})
-], 
-async ( req, res ) => {
-    
-    const errors = validationResult(req);
-    
-    if(!errors.isEmpty()){
-        return res.status(400).json({
-            errors:errors.array()
-        });
-    }
-    const { name, email, password } = req.body;
+router.post(
+	'/',
+	[
+		body('name', 'enter a valid name').not().isEmpty(),
+		body('email', 'Please include a valid email').isEmail(),
+		body(
+			'password',
+			'Please enter a password with 6 o more characters'
+		).isLength({ min: 6 }),
+	],
+	async (req, res) => {
+		const errors = validationResult(req);
 
-    try {
-        let user = await User.findOne({ email });
+		if (!errors.isEmpty()) {
+			return res.status(400).json({
+				errors: errors.array(),
+			});
+		}
+		const { name, email, password } = req.body;
 
-        if(user) {
-            return res.status(400).json({msg:"user already exists"})
-        }
+		try {
+			let user = await User.findOne({ email });
 
-        user = new User({
-            name,
-            email,
-            password
-        });
+			if (user) {
+				return res.status(400).json({ msg: 'user already exists' });
+			}
 
-        const salt = await bcryptjs.genSalt(10);
+			user = new User({
+				name,
+				email,
+				password,
+			});
 
-        user.password = await bcryptjs.hash(password, salt);
+			const salt = await bcryptjs.genSalt(10);
 
-        await user.save();
+			user.password = await bcryptjs.hash(password, salt);
 
-        const payload = {
-            user: {
-                id: user.id
-            }
-        }
+			await user.save();
 
-        jwt.sign(payload, process.env.jwtSecret, {
-            expiresIn:360000,
-        },
-        (err, token) => {
-            if(err) throw err;
-            res.json({ token });
-        }
-        )
+			const payload = {
+				user: {
+					id: user.id,
+				},
+			};
 
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-}
+			jwt.sign(
+				payload,
+				process.env.jwtSecret,
+				{
+					expiresIn: 360000,
+				},
+				(err, token) => {
+					if (err) throw err;
+					res.json({ token });
+				}
+			);
+		} catch (err) {
+			console.error(err.message);
+			res.status(500).send('Server Error');
+		}
+	}
 );
 
-
-
 module.exports = router;
-
-
- 
-
-

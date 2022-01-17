@@ -7,15 +7,16 @@ const app = express();
 connectDB();
 
 //Init Middleware
-app.use(express.json({ extended:false }));
+app.use(express.json({ extended: false }));
 
-app.get('/', (req, res) => res.json({msg: 'Hello World'}))
+app.get('/', (req, res) => res.json({ msg: 'Hello World' }));
 
 //Define Routes
 app.use('/api/users', require('./routes/users'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/order', require('./routes/order'));
+app.use('/api/weather', require('./routes/weather'));
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}` ));
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

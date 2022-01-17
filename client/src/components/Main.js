@@ -1,35 +1,32 @@
-import React, {useEffect, useContext} from 'react';
+import React, { useEffect, useContext } from 'react';
 import WeatherContext from '../context/weatherContext';
 import Weather from './Weather';
 import OrderList from './OrderList';
 import AuthContext from '../context/authContext';
 
-
 const Main = () => {
-    const authContext = useContext(AuthContext);
+	const authContext = useContext(AuthContext);
 
-    const weatherContext = useContext(WeatherContext);
+	const weatherContext = useContext(WeatherContext);
 
-    const {getWeather} = weatherContext;
+	const { getWeather } = weatherContext;
 
-    const {loadUser} = authContext;
+	const { loadUser } = authContext;
 
-    
-    useEffect(()=>{
-        // getWeather();
-        loadUser();
-        console.log("logged")
-        
-        //eslint-disable-next-line
-    },[]) 
-    
+	useEffect(() => {
+		getWeather();
+		loadUser();
+		console.log('logged');
 
-    return (
-        <div>
-            <Weather />
-            <OrderList />
-        </div>
-    )
-}
+		//eslint-disable-next-line
+	}, []);
+
+	return (
+		<div>
+			<Weather />
+			<OrderList />
+		</div>
+	);
+};
 
 export default Main;

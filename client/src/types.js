@@ -1,4 +1,5 @@
 export const GET_WEATHER = 'GET_WEATHER';
+export const WEATHER_ERROR = 'WEATHER_ERROR';
 export const GET_DAY = 'GET_DAY';
 export const GET_ID = 'GET_ID';
 export const GET_TEMP = 'GET_TEMP';

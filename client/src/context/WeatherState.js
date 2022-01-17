@@ -1,6 +1,7 @@
 import React, { useReducer, useContext } from 'react';
 import {
 	GET_WEATHER,
+	WEATHER_ERROR,
 	GET_DAY,
 	GET_TEMP,
 	ORDER_BEER,
@@ -42,10 +43,13 @@ const WeatherState = props => {
 
 	//Get Weather
 	const getWeather = async () => {
-		const res = await axios.get(
-			'https://api.openweathermap.org/data/2.5/onecall?lat=-34.603722&lon=-58.381592&units=metric&exclude=minutely,hourly&appid=09ec42e06160e90f15ac94e022c69554'
-		);
-		dispatch({ type: GET_WEATHER, payload: res.data });
+		try {
+			const res = await axios.get('/api/weather');
+
+			dispatch({ type: GET_WEATHER, payload: res.data });
+		} catch (err) {
+			dispatch({ type: WEATHER_ERROR, payload: err.response });
+		}
 	};
 
 	//Get Day
